@@ -198,12 +198,50 @@
       border-color: #444;
     }
 
-    #donate {
+    #donate-overlay {
       display: none;
-      margin-top: 3rem;
-      text-align: center;
-      max-width: 340px;
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #donate-overlay.visible {
+      display: flex;
+    }
+
+    #donate {
+      position: relative;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 2rem;
+      max-width: 340px;
+      width: 90%;
+      text-align: center;
+    }
+
+    #donate-close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.8rem;
+      background: none;
+      border: none;
+      color: #555;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    #donate-close:hover {
+      color: #aaa;
     }
 
     #donate p {
@@ -222,18 +260,7 @@
       margin-bottom: 1rem;
     }
 
-    #donate input {
-      padding: 0.55rem 0.7rem;
-      background: #111;
-      border: 1px solid #222;
-      border-radius: 3px;
-      color: #d0d0d0;
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 0.9rem;
-      font-weight: 300;
-    }
-
-    #donate button {
+    #donate-btn {
       width: 100%;
     }
 
@@ -324,18 +351,21 @@
     <canvas id="preview"></canvas>
     <button id="download-btn">baixar</button>
   </div>
-  <div id="donate">
-    <p>gostou? considere uma doacao</p>
-    <label>
-      valor (minimo R$ 30.000,00)
-      <select id="donate-value">
-        <option value="30000">R$ 30.000,00</option>
-        <option value="50000">R$ 50.000,00</option>
-        <option value="100000">R$ 100.000,00</option>
-      </select>
-    </label>
-    <button type="button" id="donate-btn">doar</button>
-    <p id="donate-msg"></p>
+  <div id="donate-overlay">
+    <div id="donate">
+      <button type="button" id="donate-close">&times;</button>
+      <p>gostou? considere uma doacao</p>
+      <label>
+        valor (minimo R$ 30.000,00)
+        <select id="donate-value">
+          <option value="30000">R$ 30.000,00</option>
+          <option value="50000">R$ 50.000,00</option>
+          <option value="100000">R$ 100.000,00</option>
+        </select>
+      </label>
+      <button type="button" id="donate-btn">doar</button>
+      <p id="donate-msg"></p>
+    </div>
   </div>
   <script type="module" src="app.js"></script>
 </body>

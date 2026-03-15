@@ -86,6 +86,8 @@ async function generate(name, date, time, resolution, bgColor, lineColor) {
 
   const ctx = previewCanvas.getContext('2d');
   await renderContoursProgressive(ctx, field, fieldW, fieldH, previewW, previewH, thresholds, params.lineWeight, bgColor, lineColor);
+
+  document.getElementById('donate-overlay').classList.add('visible');
 }
 
 function downloadFullRes() {
@@ -160,6 +162,17 @@ downloadBtn.addEventListener('click', () => {
 const donateBtn = document.getElementById('donate-btn');
 const donateMsg = document.getElementById('donate-msg');
 const donateValue = document.getElementById('donate-value');
+
+const donateOverlay = document.getElementById('donate-overlay');
+const donateClose = document.getElementById('donate-close');
+
+donateClose.addEventListener('click', () => {
+  donateOverlay.classList.remove('visible');
+});
+
+donateOverlay.addEventListener('click', (e) => {
+  if (e.target === donateOverlay) donateOverlay.classList.remove('visible');
+});
 
 donateBtn.addEventListener('click', () => {
   const val = Number(donateValue.value);
