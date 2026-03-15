@@ -10,7 +10,7 @@ function fnv1a(str) {
 function multiHash(str, count) {
   const hashes = [];
   for (let i = 0; i < count; i++) {
-    hashes.push(fnv1a(str + '\x00' + i));
+    hashes.push(fnv1a(i + '\x00' + str));
   }
   return hashes;
 }
