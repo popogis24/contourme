@@ -14,6 +14,7 @@ export function generateField(width, height, params, seed) {
   const fStr = params.focusStrength * 0.5;                 // 0-0.5
   const cosA = Math.cos(params.angle * Math.PI * 2);
   const sinA = Math.sin(params.angle * Math.PI * 2);
+  const maxDist = Math.sqrt(width * width + height * height);
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -25,7 +26,6 @@ export function generateField(width, height, params, seed) {
       const dx = rx - fxPx;
       const dy = ry - fyPx;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const maxDist = Math.sqrt(width * width + height * height);
       const distortion = fStr * (1 - dist / maxDist);
       const fx = rx + dx * distortion;
       const fy = ry + dy * distortion;
@@ -54,6 +54,11 @@ export function extractContours(field, width, height, thresholds) {
   const segments = [];
 
   for (const threshold of thresholds) {
+    const lerp = (a, b, va, vb) => {
+      const t = (threshold - va) / (vb - va);
+      return a + t * (b - a);
+    };
+
     for (let y = 0; y < height - 1; y++) {
       for (let x = 0; x < width - 1; x++) {
         const tl = field[y * width + x];
@@ -68,11 +73,6 @@ export function extractContours(field, width, height, thresholds) {
           (bl >= threshold ? 1 : 0);
 
         if (caseIndex === 0 || caseIndex === 15) continue;
-
-        const lerp = (a, b, va, vb) => {
-          const t = (threshold - va) / (vb - va);
-          return a + t * (b - a);
-        };
 
         const top    = { x: lerp(x, x + 1, tl, tr), y };
         const right  = { x: x + 1, y: lerp(y, y + 1, tr, br) };
