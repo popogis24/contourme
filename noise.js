@@ -11,8 +11,7 @@ const F2 = 0.5 * (Math.sqrt(3) - 1);
 const G2 = (3 - Math.sqrt(3)) / 6;
 
 /**
- * xorshift32 PRNG — returns next state and a float in [0, 1).
- * Operates on 32-bit unsigned integers.
+ * xorshift32 PRNG — returns next 32-bit unsigned integer state.
  */
 function xorshift32(state) {
   // state must be non-zero
@@ -27,8 +26,8 @@ function xorshift32(state) {
  * Build a doubled permutation table [0..511] from a seed.
  */
 function buildPermTable(seed) {
-  // Ensure non-zero seed for xorshift32
-  let state = (seed >>> 0) || 1;
+  // Mix seed to avoid zero-state and seed=0/seed=1 collision
+  let state = ((seed >>> 0) ^ 0xDEADBEEF) >>> 0 || 1;
 
   // Initialize p[0..255]
   const p = new Uint8Array(256);
@@ -68,10 +67,9 @@ export function createNoise2D(seed) {
     const t = (i + j) * G2;
     // Unskew the cell origin back to (x, y) space
     const X0 = i - t;
-    const Y0 = j - t;
     // Distance from cell origin
     const x0 = x - X0;
-    const y0 = y - Y0;
+    const y0 = y - (j - t);
 
     // Step 2: Determine which simplex triangle we are in
     // For 2D, there are only two simplex shapes: lower-left or upper-right triangle
