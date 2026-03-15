@@ -117,3 +117,42 @@ export function renderContours(ctx, segments, fieldWidth, fieldHeight, canvasWid
   }
   ctx.stroke();
 }
+
+/**
+ * Render contours progressively, one threshold at a time.
+ * Returns a promise that resolves when all thresholds are drawn.
+ */
+export function renderContoursProgressive(ctx, field, fieldWidth, fieldHeight, canvasWidth, canvasHeight, thresholds, lineWeight, bgColor = '#0a0a0a', lineColor = '#ffffff') {
+  const scaleX = canvasWidth / fieldWidth;
+  const scaleY = canvasHeight / fieldHeight;
+  const lw = 0.5 + lineWeight * 2;
+
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = lw;
+
+  let i = 0;
+
+  return new Promise((resolve) => {
+    function drawNext() {
+      if (i >= thresholds.length) {
+        resolve();
+        return;
+      }
+
+      const segments = extractContours(field, fieldWidth, fieldHeight, [thresholds[i]]);
+      ctx.beginPath();
+      for (const seg of segments) {
+        ctx.moveTo(seg.x1 * scaleX, seg.y1 * scaleY);
+        ctx.lineTo(seg.x2 * scaleX, seg.y2 * scaleY);
+      }
+      ctx.stroke();
+
+      i++;
+      setTimeout(drawNext, 100);
+    }
+
+    requestAnimationFrame(drawNext);
+  });
+}

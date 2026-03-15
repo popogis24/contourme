@@ -3,140 +3,339 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contour Identity</title>
+  <title>minhas curvas de nivel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    #announcement {
+      width: 100%;
+      background: #141414;
+      border-bottom: 1px solid #1e1e1e;
+      overflow: hidden;
+      white-space: nowrap;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      padding: 0.5rem 0;
+    }
+
+    #announcement .track {
+      display: inline-block;
+      animation: scroll 180s linear infinite;
+    }
+
+    #announcement span {
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: #555;
+      padding: 0 2rem;
+    }
+
+    #announcement span::before {
+      content: '~';
+      margin-right: 2rem;
+      color: #333;
+    }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       background: #0a0a0a;
-      color: #e0e0e0;
+      color: #d0d0d0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 3rem 1rem;
+      padding: 5.5rem 1rem 3rem;
     }
+
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 300;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 2rem;
-      color: #ffffff;
+      letter-spacing: 0.12em;
+      margin-bottom: 1rem;
+      color: #fff;
     }
+
+    #about {
+      max-width: 380px;
+      margin-bottom: 2.5rem;
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: #666;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    #about p + p {
+      margin-top: 0.5rem;
+    }
+
     form {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.2rem;
       width: 100%;
-      max-width: 360px;
-      margin-bottom: 2rem;
+      max-width: 340px;
+      margin-bottom: 2.5rem;
     }
+
     label {
       display: flex;
       flex-direction: column;
       gap: 0.3rem;
-      font-size: 0.85rem;
-      color: #999;
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: #777;
     }
+
     input, select {
-      padding: 0.6rem 0.8rem;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 4px;
-      color: #e0e0e0;
-      font-size: 1rem;
+      padding: 0.55rem 0.7rem;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 3px;
+      color: #d0d0d0;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      transition: border-color 0.2s;
     }
-    input[type="color"] {
-      padding: 0.2rem;
-      height: 2.2rem;
+
+    input::placeholder {
+      color: #444;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #444;
+    }
+
+    select {
       cursor: pointer;
     }
+
+    select option {
+      background: #111;
+      color: #d0d0d0;
+    }
+
+    input[type="color"] {
+      padding: 0.2rem;
+      height: 2rem;
+      width: 100%;
+      cursor: pointer;
+    }
+
     .color-row {
       display: flex;
       gap: 1rem;
     }
+
     .color-row label {
       flex: 1;
     }
-    input:focus, select:focus {
-      outline: none;
-      border-color: #555;
-    }
+
     button {
-      padding: 0.7rem;
-      background: #ffffff;
+      padding: 0.65rem;
+      background: #fff;
       color: #0a0a0a;
       border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      font-weight: 600;
+      border-radius: 3px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
       cursor: pointer;
       transition: opacity 0.2s;
     }
-    button:hover { opacity: 0.9; }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
     #preview-container {
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
+      gap: 1.2rem;
       width: 100%;
       max-width: 960px;
     }
-    #preview-container.visible { display: flex; }
+
+    #preview-container.visible {
+      display: flex;
+    }
+
     #preview {
       width: 100%;
       height: auto;
-      border: 1px solid #222;
+      border: 1px solid #1a1a1a;
     }
+
     #download-btn {
       background: transparent;
-      color: #ffffff;
-      border: 1px solid #444;
+      color: #888;
+      border: 1px solid #2a2a2a;
       font-weight: 400;
+    }
+
+    #download-btn:hover {
+      color: #d0d0d0;
+      border-color: #444;
+    }
+
+    #donate {
+      display: none;
+      margin-top: 3rem;
+      text-align: center;
+      max-width: 340px;
+      width: 100%;
+    }
+
+    #donate p {
+      font-size: 0.8rem;
+      color: #555;
+      margin-bottom: 1rem;
+    }
+
+    #donate label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: #777;
+      margin-bottom: 1rem;
+    }
+
+    #donate input {
+      padding: 0.55rem 0.7rem;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 3px;
+      color: #d0d0d0;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+
+    #donate button {
+      width: 100%;
+    }
+
+    #donate-msg {
+      font-size: 0.75rem;
+      color: #555;
+      margin-top: 0.8rem;
     }
   </style>
 </head>
 <body>
-  <h1>Contour Identity</h1>
+  <div id="announcement">
+    <div class="track">
+      <span>esse site foi feito pelo anderson stolfi ao perceber que as curvas de nivel que ele usava como capa do linkedin nao tinham personalidade nenhuma e na verdade tinham sido roubadas de um daqueles sites de stock photos</span>
+      <span>eu anderson stolfi estou um pouco frustrado pq no fim das contas eu nao gostei muito das minhas curvas de nivel, da mesma forma que eu nao concordo com meu signo ascendente</span>
+      <span>o ilovegis.com.br e um site muito melhor que esse...</span>
+      <span>alias esses dias o ilovegis ficou 1 semana fora do ar, me desculpem</span>
+      <span>se voce nasceu de madrugada e nao sabe a hora exata, coloca 03:00 e finge que lembra</span>
+      <span>tecnicamente isso aqui e um mapa de um lugar que nao existe</span>
+      <span>nao me responsabilizo se voce gostar mais das curvas de nivel de outra pessoa do que das suas</span>
+      <span>sim eu usei inteligencia artificial pra fazer esse site, nao eu nao tenho vergonha</span>
+      <span>se voce colocar o nome do seu ex so pra comparar, eu entendo</span>
+      <span>a unica coisa deterministica na minha vida sao essas curvas de nivel</span>
+      <span>eu queria que meu mapa fosse mais bonito mas a matematica nao mente</span>
+      <span>nenhum cartografo foi consultado na producao deste site</span>
+      <span>funciona melhor que horoscopo e com a mesma base cientifica</span>
+      <span>esse site me custa 50 reais mensais da VPS + o dominio que deve ser uns 90</span>
+      <span>eu anderson stolfi sou o melhor desenvolvedor gis do japao</span>
+      <span>nao cobicaras as curvas de nivel da mulher do proximo</span>
+      <span>esse site foi feito pelo anderson stolfi ao perceber que as curvas de nivel que ele usava como capa do linkedin nao tinham personalidade nenhuma e na verdade tinham sido roubadas de um daqueles sites de stock photos</span>
+      <span>eu anderson stolfi estou um pouco frustrado pq no fim das contas eu nao gostei muito das minhas curvas de nivel, da mesma forma que eu nao concordo com meu signo ascendente</span>
+      <span>o ilovegis.com.br e um site muito melhor que esse...</span>
+      <span>alias esses dias o ilovegis ficou 1 semana fora do ar, me desculpem</span>
+      <span>se voce nasceu de madrugada e nao sabe a hora exata, coloca 03:00 e finge que lembra</span>
+      <span>tecnicamente isso aqui e um mapa de um lugar que nao existe</span>
+      <span>nao me responsabilizo se voce gostar mais das curvas de nivel de outra pessoa do que das suas</span>
+      <span>sim eu usei inteligencia artificial pra fazer esse site, nao eu nao tenho vergonha</span>
+      <span>se voce colocar o nome do seu ex so pra comparar, eu entendo</span>
+      <span>a unica coisa deterministica na minha vida sao essas curvas de nivel</span>
+      <span>eu queria que meu mapa fosse mais bonito mas a matematica nao mente</span>
+      <span>nenhum cartografo foi consultado na producao deste site</span>
+      <span>funciona melhor que horoscopo e com a mesma base cientifica</span>
+      <span>esse site me custa 50 reais mensais da VPS + o dominio que deve ser uns 90</span>
+      <span>eu anderson stolfi sou o melhor desenvolvedor gis do japao</span>
+      <span>nao cobicaras as curvas de nivel da mulher do proximo</span>
+    </div>
+  </div>
+  <h1>minhas curvas de nivel</h1>
+  <div id="about">
+    <p>seu nome, data e hora de nascimento viram uma assinatura matematica. dessa assinatura saem curvas de nivel, tipo um mapa topografico de um terreno que so existe pra voce.</p>
+    <p>mesmos dados, mesmo mapa. sempre. duas pessoas nunca geram o mesmo resultado.</p>
+  </div>
   <form id="form">
     <label>
-      Nome completo
+      nome completo
       <input type="text" id="name" required minlength="2" autocomplete="name">
     </label>
     <label>
-      Data de nascimento
-      <input type="date" id="birthdate" required>
+      data de nascimento
+      <input type="text" id="birthdate" required placeholder="dd/mm/aaaa" maxlength="10" inputmode="numeric">
     </label>
     <label>
-      Hora de nascimento
-      <input type="time" id="birthtime" required>
+      hora de nascimento
+      <input type="text" id="birthtime" required placeholder="hh:mm" maxlength="5" inputmode="numeric">
     </label>
     <label>
-      Resolucao
+      resolucao
       <select id="resolution">
-        <option value="1920x1080">1920 x 1080 (Full HD)</option>
-        <option value="2560x1440">2560 x 1440 (2K)</option>
-        <option value="3840x2160">3840 x 2160 (4K)</option>
-        <option value="1080x1920">1080 x 1920 (Mobile)</option>
+        <option value="1920x1080">1920 x 1080</option>
+        <option value="2560x1440">2560 x 1440</option>
+        <option value="3840x2160">3840 x 2160</option>
+        <option value="1080x1920">1080 x 1920</option>
       </select>
     </label>
     <div class="color-row">
       <label>
-        Cor do fundo
+        cor do fundo
         <input type="color" id="bg-color" value="#0a0a0a">
       </label>
       <label>
-        Cor das linhas
+        cor das linhas
         <input type="color" id="line-color" value="#ffffff">
       </label>
     </div>
-    <button type="submit" id="generate-btn">Gerar</button>
+    <button type="submit" id="generate-btn">revelar</button>
   </form>
   <div id="preview-container">
     <canvas id="preview"></canvas>
-    <button id="download-btn">Baixar PNG</button>
+    <button id="download-btn">baixar</button>
+  </div>
+  <div id="donate">
+    <p>gostou? considere uma doacao</p>
+    <label>
+      valor (minimo R$ 30.000,00)
+      <select id="donate-value">
+        <option value="30000">R$ 30.000,00</option>
+        <option value="50000">R$ 50.000,00</option>
+        <option value="100000">R$ 100.000,00</option>
+      </select>
+    </label>
+    <button type="button" id="donate-btn">doar</button>
+    <p id="donate-msg"></p>
   </div>
   <script type="module" src="app.js"></script>
 </body>

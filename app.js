@@ -1,5 +1,5 @@
 import { hashInputs, deriveParams } from './hash.js';
-import { generateField, extractContours, renderContours } from './contour.js';
+import { generateField, extractContours, renderContours, renderContoursProgressive } from './contour.js';
 
 const form = document.getElementById('form');
 const generateBtn = document.getElementById('generate-btn');
@@ -13,6 +13,27 @@ let currentResolution = { w: 1920, h: 1080 };
 let currentFirstName = '';
 let currentBgColor = '#0a0a0a';
 let currentLineColor = '#ffffff';
+
+// Input masks for date (dd/mm/aaaa) and time (hh:mm)
+function maskDate(input) {
+  input.addEventListener('input', () => {
+    let v = input.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 4) v = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+    else if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+    input.value = v;
+  });
+}
+
+function maskTime(input) {
+  input.addEventListener('input', () => {
+    let v = input.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length > 2) v = v.slice(0, 2) + ':' + v.slice(2);
+    input.value = v;
+  });
+}
+
+maskDate(document.getElementById('birthdate'));
+maskTime(document.getElementById('birthtime'));
 
 function parseResolution(value) {
   const [w, h] = value.split('x').map(Number);
@@ -29,7 +50,7 @@ function fieldMinMax(field) {
   return { min, max };
 }
 
-function generate(name, date, time, resolution, bgColor, lineColor) {
+async function generate(name, date, time, resolution, bgColor, lineColor) {
   const seed = hashInputs(name, date, time);
   const params = deriveParams(name, date, time);
   const { w, h } = parseResolution(resolution);
@@ -61,19 +82,23 @@ function generate(name, date, time, resolution, bgColor, lineColor) {
     thresholds.push(min + (max - min) * (i / (numLines + 1)));
   }
 
-  const segments = extractContours(field, fieldW, fieldH, thresholds);
-  const ctx = previewCanvas.getContext('2d');
-  renderContours(ctx, segments, fieldW, fieldH, previewW, previewH, params.lineWeight, bgColor, lineColor);
-
   previewContainer.classList.add('visible');
+
+  const ctx = previewCanvas.getContext('2d');
+  await renderContoursProgressive(ctx, field, fieldW, fieldH, previewW, previewH, thresholds, params.lineWeight, bgColor, lineColor);
 }
 
 function downloadFullRes() {
   if (!currentParams) return;
 
   const { w, h } = currentResolution;
+  const aspect = h / w;
 
-  const field = generateField(w, h, currentParams, currentSeed);
+  // Use a moderate field grid (same as preview) — contours scale perfectly
+  const fieldW = Math.min(w, 600);
+  const fieldH = Math.round(fieldW * aspect);
+
+  const field = generateField(fieldW, fieldH, currentParams, currentSeed);
 
   const numLines = Math.floor(10 + currentParams.density * 40);
   const { min, max } = fieldMinMax(field);
@@ -82,13 +107,13 @@ function downloadFullRes() {
     thresholds.push(min + (max - min) * (i / (numLines + 1)));
   }
 
-  const segments = extractContours(field, w, h, thresholds);
+  const segments = extractContours(field, fieldW, fieldH, thresholds);
 
   const offscreen = document.createElement('canvas');
   offscreen.width = w;
   offscreen.height = h;
   const ctx = offscreen.getContext('2d');
-  renderContours(ctx, segments, w, h, w, h, currentParams.lineWeight, currentBgColor, currentLineColor);
+  renderContours(ctx, segments, fieldW, fieldH, w, h, currentParams.lineWeight, currentBgColor, currentLineColor);
 
   const link = document.createElement('a');
   link.download = `contour-${currentFirstName}.png`;
@@ -96,7 +121,7 @@ function downloadFullRes() {
   link.click();
 }
 
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const name = document.getElementById('name').value;
@@ -109,26 +134,38 @@ form.addEventListener('submit', (e) => {
   if (name.trim().length < 2) return;
 
   generateBtn.disabled = true;
-  generateBtn.textContent = 'Gerando...';
+  generateBtn.textContent = 'revelando...';
 
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      generate(name, date, time, resolution, bgColor, lineColor);
-      generateBtn.disabled = false;
-      generateBtn.textContent = 'Gerar';
-    }, 16);
-  });
+  // Let UI update before heavy computation
+  await new Promise(r => setTimeout(r, 16));
+  await generate(name, date, time, resolution, bgColor, lineColor);
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'revelar';
 });
 
 downloadBtn.addEventListener('click', () => {
   downloadBtn.disabled = true;
-  downloadBtn.textContent = 'Gerando alta resolucao...';
+  downloadBtn.textContent = 'preparando...';
 
   requestAnimationFrame(() => {
     setTimeout(() => {
       downloadFullRes();
       downloadBtn.disabled = false;
-      downloadBtn.textContent = 'Baixar PNG';
+      downloadBtn.textContent = 'baixar';
     }, 16);
   });
+});
+
+// Donate
+const donateBtn = document.getElementById('donate-btn');
+const donateMsg = document.getElementById('donate-msg');
+const donateValue = document.getElementById('donate-value');
+
+donateBtn.addEventListener('click', () => {
+  const val = Number(donateValue.value);
+  if (val < 30000) {
+    donateMsg.textContent = 'valor minimo e R$ 30.000,00. eu sei do meu valor.';
+  } else {
+    donateMsg.textContent = 'obrigado pela intencao. infelizmente ainda nao implementei o pagamento.';
+  }
 });
