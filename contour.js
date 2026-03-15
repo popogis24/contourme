@@ -100,15 +100,15 @@ export function extractContours(field, width, height, thresholds) {
 /**
  * Render contour segments onto a canvas 2D context.
  */
-export function renderContours(ctx, segments, fieldWidth, fieldHeight, canvasWidth, canvasHeight, lineWeight) {
+export function renderContours(ctx, segments, fieldWidth, fieldHeight, canvasWidth, canvasHeight, lineWeight, bgColor = '#0a0a0a', lineColor = '#ffffff') {
   const scaleX = canvasWidth / fieldWidth;
   const scaleY = canvasHeight / fieldHeight;
   const lw = 0.5 + lineWeight * 2;
 
-  ctx.fillStyle = '#0a0a0a';
+  ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-  ctx.strokeStyle = '#ffffff';
+  ctx.strokeStyle = lineColor;
   ctx.lineWidth = lw;
   ctx.beginPath();
   for (const seg of segments) {

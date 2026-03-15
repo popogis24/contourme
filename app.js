@@ -11,6 +11,8 @@ let currentParams = null;
 let currentSeed = 0;
 let currentResolution = { w: 1920, h: 1080 };
 let currentFirstName = '';
+let currentBgColor = '#0a0a0a';
+let currentLineColor = '#ffffff';
 
 function parseResolution(value) {
   const [w, h] = value.split('x').map(Number);
@@ -27,7 +29,7 @@ function fieldMinMax(field) {
   return { min, max };
 }
 
-function generate(name, date, time, resolution) {
+function generate(name, date, time, resolution, bgColor, lineColor) {
   const seed = hashInputs(name, date, time);
   const params = deriveParams(name, date, time);
   const { w, h } = parseResolution(resolution);
@@ -36,6 +38,8 @@ function generate(name, date, time, resolution) {
   currentSeed = seed;
   currentResolution = { w, h };
   currentFirstName = name.trim().split(/\s+/)[0].toLowerCase();
+  currentBgColor = bgColor;
+  currentLineColor = lineColor;
 
   const maxPreviewWidth = Math.min(960, window.innerWidth - 32);
   const aspect = h / w;
@@ -59,7 +63,7 @@ function generate(name, date, time, resolution) {
 
   const segments = extractContours(field, fieldW, fieldH, thresholds);
   const ctx = previewCanvas.getContext('2d');
-  renderContours(ctx, segments, fieldW, fieldH, previewW, previewH, params.lineWeight);
+  renderContours(ctx, segments, fieldW, fieldH, previewW, previewH, params.lineWeight, bgColor, lineColor);
 
   previewContainer.classList.add('visible');
 }
@@ -84,7 +88,7 @@ function downloadFullRes() {
   offscreen.width = w;
   offscreen.height = h;
   const ctx = offscreen.getContext('2d');
-  renderContours(ctx, segments, w, h, w, h, currentParams.lineWeight);
+  renderContours(ctx, segments, w, h, w, h, currentParams.lineWeight, currentBgColor, currentLineColor);
 
   const link = document.createElement('a');
   link.download = `contour-${currentFirstName}.png`;
@@ -99,6 +103,8 @@ form.addEventListener('submit', (e) => {
   const date = document.getElementById('birthdate').value;
   const time = document.getElementById('birthtime').value;
   const resolution = document.getElementById('resolution').value;
+  const bgColor = document.getElementById('bg-color').value;
+  const lineColor = document.getElementById('line-color').value;
 
   if (name.trim().length < 2) return;
 
@@ -107,7 +113,7 @@ form.addEventListener('submit', (e) => {
 
   requestAnimationFrame(() => {
     setTimeout(() => {
-      generate(name, date, time, resolution);
+      generate(name, date, time, resolution, bgColor, lineColor);
       generateBtn.disabled = false;
       generateBtn.textContent = 'Gerar';
     }, 16);

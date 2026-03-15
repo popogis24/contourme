@@ -47,6 +47,18 @@
       color: #e0e0e0;
       font-size: 1rem;
     }
+    input[type="color"] {
+      padding: 0.2rem;
+      height: 2.2rem;
+      cursor: pointer;
+    }
+    .color-row {
+      display: flex;
+      gap: 1rem;
+    }
+    .color-row label {
+      flex: 1;
+    }
     input:focus, select:focus {
       outline: none;
       border-color: #555;
@@ -110,6 +122,16 @@
         <option value="1080x1920">1080 x 1920 (Mobile)</option>
       </select>
     </label>
+    <div class="color-row">
+      <label>
+        Cor do fundo
+        <input type="color" id="bg-color" value="#0a0a0a">
+      </label>
+      <label>
+        Cor das linhas
+        <input type="color" id="line-color" value="#ffffff">
+      </label>
+    </div>
     <button type="submit" id="generate-btn">Gerar</button>
   </form>
   <div id="preview-container">
